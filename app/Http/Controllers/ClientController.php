@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use Illuminate\Http\Request;
-use App\Models\Category;
 
-class CategoryController extends Controller
+class ClientController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,11 +14,12 @@ class CategoryController extends Controller
      */
     public function index()
     {
-       $category = Category::all();
-       return response()->json([
-        'data'=> $category,
-        'msg'=> 'lista de categoria'
-    ],200);
+        $clients = Client::all();
+
+        return response()->json([
+            'data' => $clients,
+            'msg' => "Lsita de Clientes"
+        ]);
     }
 
     /**
@@ -39,13 +40,21 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $categories = new Category();
-        $categories->categoriesName = $request->input('categoriesName');
-        $categories->save();
+        $clients = new Client();
+
+        $clients->name = $request->input("name");
+        $clients->lastName = $request->input("lastName");
+        $clients->ci = $request->input("ci");
+        $clients->address = $request->input("address");
+        $clients->phone = $request->input("phone");
+
+        $clients->save();
+
         return response()->json([
-            'data'=> $categories,
-            'msg'=> 'categoria creada'
-        ],200);
+            'data' => $clients,
+            'msg' => "Cliente creado con exito"
+        ]);
+
     }
 
     /**
@@ -56,9 +65,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $categories = Category::find($id);
-
-        return response()->json($categories);
+        //
     }
 
     /**
@@ -81,19 +88,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $categories = Category::find($id);
-
-        if (!$categories) {
-            return response()->json([
-                'data' => null,
-                'msg' => 'Categoria no encontrada'
-            ], 400);
-        }
-
-        $categories->category_name = $request->input('category_name');
-        $categories->save();
-
-        return response()->json($categories);
+        //
     }
 
     /**
@@ -104,18 +99,6 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $categories = Category::find($id);
-
-        if (!$categories) {
-            return response()->json([
-                'data' => null,
-                'msg' => 'Categoria no encontrada'
-            ], 400);
-        }
-
-
-        $categories->delete();
-
-        return response()->json($categories);
+        //
     }
 }

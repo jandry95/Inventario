@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Report;
 use Illuminate\Support\Facades\DB;
 class ProductController extends Controller
 {
@@ -49,8 +50,14 @@ class ProductController extends Controller
         $products->productsDescription = $request->input('productsDescription');
         $products->category_id = $request->input('category_id');
         $products->save();
+
+         $reports = new Report();
+         $reports->productsName = $request->input('productsName');
+         $reports->productsStock = $request->input('productsStock');
+         $reports->save();
         return response()->json([
             'data'=> $products,
+            'reports' => $reports,
             'msg'=> 'Producto creado'
         ],200);
     }
@@ -63,7 +70,9 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        $products = Product::find($id);
+
+        return response()->json($products);
     }
 
     /**
@@ -86,7 +95,22 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $products = Product::find($id);
+
+        if (!$products) {
+            return response()->json([
+                'data' => null,
+                'msg' => 'Producto no Encontrado'
+            ], 400);
+        }
+
+        $products->productsName = $request->input('productsName');
+        $products->productsStock = $request->input('productsStock');
+        $products->productsDescription = $request->input('productsDescription');
+        $products->category_id = $request->input('category_id');
+        $products->save();
+
+        return response()->json($products);
     }
 
     /**
@@ -97,6 +121,18 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $products = Product::find($id);
+
+        if (!$products) {
+            return response()->json([
+                'data' => null,
+                'msg' => 'Producto no Encontrada'
+            ], 400);
+        }
+
+
+        $products->delete();
+
+        return response()->json($products);
     }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\Sales;
 use Illuminate\Http\Request;
-use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 
-class CategoryController extends Controller
+class SalesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,11 +16,12 @@ class CategoryController extends Controller
      */
     public function index()
     {
-       $category = Category::all();
-       return response()->json([
-        'data'=> $category,
-        'msg'=> 'lista de categoria'
-    ],200);
+        $sales = Sales::all();
+
+        return response()->json([
+            'data' => $sales,
+            'msg' => "lista de Salidas"
+        ]);
     }
 
     /**
@@ -39,13 +42,44 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $categories = new Category();
-        $categories->categoriesName = $request->input('categoriesName');
-        $categories->save();
-        return response()->json([
-            'data'=> $categories,
-            'msg'=> 'categoria creada'
-        ],200);
+        $idProducto =  $request->input('product_id');
+        $cantidad = $request->input('sales_products');
+
+        $consulta = Product::find($idProducto);
+
+        $validar = $consulta['productsStock'];
+
+        if($cantidad > $validar)
+        {
+            $mensaje = "No hay muchos en stok";
+
+            return response()->json([
+                'msg' => $mensaje
+            ]);
+        }
+
+        if($cantidad < $validar)
+        {
+                $sales = new Sales();
+            $sales->sales_products = $cantidad;
+            $sales->product_id = $idProducto;
+            $sales->client_id =  $request->input('client_id');
+            $sales->save();
+
+
+            $product_sold = DB::select("UPDATE products INNER JOIN sales
+            ON products.id = sales.product_id
+            SET products.productsStock = products.productsStock - $cantidad
+            WHERE products.id = $idProducto");
+
+            return response()->json([
+                'data' => $sales,
+                'msg' => "Venta realizada con Exito"
+            ]);
+        }
+
+
+
     }
 
     /**
@@ -56,9 +90,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $categories = Category::find($id);
-
-        return response()->json($categories);
+        //
     }
 
     /**
@@ -81,19 +113,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $categories = Category::find($id);
-
-        if (!$categories) {
-            return response()->json([
-                'data' => null,
-                'msg' => 'Categoria no encontrada'
-            ], 400);
-        }
-
-        $categories->category_name = $request->input('category_name');
-        $categories->save();
-
-        return response()->json($categories);
+        //
     }
 
     /**
@@ -104,18 +124,6 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $categories = Category::find($id);
-
-        if (!$categories) {
-            return response()->json([
-                'data' => null,
-                'msg' => 'Categoria no encontrada'
-            ], 400);
-        }
-
-
-        $categories->delete();
-
-        return response()->json($categories);
+        //
     }
 }
