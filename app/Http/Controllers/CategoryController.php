@@ -90,7 +90,7 @@ class CategoryController extends Controller
             ], 400);
         }
 
-        $categories->category_name = $request->input('category_name');
+        $categories->categoriesName = $request->input('categoriesName');
         $categories->save();
 
         return response()->json($categories);
