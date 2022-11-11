@@ -17,7 +17,7 @@ class ProductController extends Controller
     {
        // $products = Product::all();
       $products = DB::table('categories')
-      ->leftJoin('products', 'categories.id', '=', 'products.category_id')
+      ->join('products', 'categories.id', '=', 'products.category_id')
       ->select('*')
       ->get();
        return response()->json([
@@ -44,6 +44,8 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+
+
         $products = new Product();
         $products->productsName = $request->input('productsName');
         $products->productsStock = $request->input('productsStock');
@@ -51,13 +53,13 @@ class ProductController extends Controller
         $products->category_id = $request->input('category_id');
         $products->save();
 
-         $reports = new Report();
-         $reports->productsName = $request->input('productsName');
-         $reports->productsStock = $request->input('productsStock');
-         $reports->save();
+        //  $reports = new Report();
+        //  $reports->productsName = $request->input('productsName');
+        //  $reports->productsStock = $request->input('productsStock');
+        //  $reports->save();
         return response()->json([
             'data'=> $products,
-            'reports' => $reports,
+           // 'reports' => $reports,
             'msg'=> 'Producto creado'
         ],200);
     }
