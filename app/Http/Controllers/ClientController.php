@@ -65,7 +65,11 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        //
+        $clients = Client::find($id);
+        return response()->json([
+            'data' => $clients,
+            'msg' => "Cliente creado con exito"
+        ]);
     }
 
     /**
@@ -88,7 +92,24 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $clients = Client::find($id);
+
+        if (!$clients) {
+            return response()->json([
+                'data' => null,
+                'msg' => 'Categoria no encontrada'
+            ], 400);
+        }
+
+
+        $clients->name = $request->input("name");
+        $clients->lastName = $request->input("lastName");
+        $clients->ci = $request->input("ci");
+        $clients->address = $request->input("address");
+        $clients->phone = $request->input("phone");
+        $clients->save();
+
+        return response()->json($clients);
     }
 
     /**

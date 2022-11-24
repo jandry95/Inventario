@@ -53,13 +53,13 @@ class ProductController extends Controller
         $products->category_id = $request->input('category_id');
         $products->save();
 
-        //  $reports = new Report();
-        //  $reports->productsName = $request->input('productsName');
-        //  $reports->productsStock = $request->input('productsStock');
-        //  $reports->save();
+         $reports = new Report();
+         $reports->productsName = $request->input('productsName');
+         $reports->productsStock = $request->input('productsStock');
+         $reports->save();
         return response()->json([
             'data'=> $products,
-           // 'reports' => $reports,
+            'reports' => $reports,
             'msg'=> 'Producto creado'
         ],200);
     }
@@ -74,7 +74,10 @@ class ProductController extends Controller
     {
         $products = Product::find($id);
 
-        return response()->json($products);
+        return response()->json([
+            'data' =>  $products,
+            'msg' => 'Producto no Encontrado'
+        ], 200);
     }
 
     /**
@@ -112,7 +115,10 @@ class ProductController extends Controller
         $products->category_id = $request->input('category_id');
         $products->save();
 
-        return response()->json($products);
+        return response()->json([
+            'data' => $products,
+            'msg' => 'Producto no Encontrado'
+        ], 200);
     }
 
     /**

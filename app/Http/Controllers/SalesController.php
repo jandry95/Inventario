@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Report;
 use App\Models\Sales;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,11 +17,43 @@ class SalesController extends Controller
      */
     public function index()
     {
-        $sales = Sales::all();
+        // $sales = Sales::all();
+
+        // return response()->json([
+        //     'data' => $sales,
+        //     'msg' => "lista de Salidas"
+        // ]);
+
+
+        $sales = DB::table('products')
+        ->join('sales', 'products.id', '=', 'sales.product_id')
+
+        ->select('*')
+        ->orderBy('sales.id', 'desc')
+        ->get();
+
+
+        $sales2 = DB::table('clients')
+        ->join('sales', 'clients.id', '=', 'sales.client_id')
+
+        ->select('*')
+        ->orderBy('sales.id', 'desc')
+        ->get();
+         return response()->json([
+          'data'=> $sales,
+          'data2' => $sales2,
+          'msg'=> 'lista de productos'
+      ],200);
+
+    }
+
+    public function report()
+    {
+        $reports = Report::all();
 
         return response()->json([
-            'data' => $sales,
-            'msg' => "lista de Salidas"
+            'data' => $reports,
+            'msg' => "lista de Ingresos"
         ]);
     }
 
