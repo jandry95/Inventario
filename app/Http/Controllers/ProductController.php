@@ -18,6 +18,7 @@ class ProductController extends Controller
        // $products = Product::all();
       $products = DB::table('categories')
       ->join('products', 'categories.id', '=', 'products.category_id')
+       ->orderBy('products.id', 'desc')
       ->select('*')
       ->get();
        return response()->json([
