@@ -40,6 +40,15 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
+
+        $request->validate([
+            'name'  =>['required', 'string'],
+            'lastName'  =>['required', 'string'],
+            'ci' => ['required', 'string', 'max:10', 'min:10'],
+            'address' => ['required', 'string'],
+            'phone' => ['required', 'string'],
+        ]);
+
         $clients = new Client();
 
         $clients->name = $request->input("name");
