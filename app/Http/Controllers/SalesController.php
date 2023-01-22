@@ -49,7 +49,11 @@ class SalesController extends Controller
 
     public function report()
     {
-        $reports = Report::all();
+       // $reports = Report::all();
+
+        $reports = DB::table('reports')
+        ->orderBy('id', 'desc')
+        ->get();
 
         return response()->json([
             'data' => $reports,
