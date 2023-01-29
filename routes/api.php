@@ -38,6 +38,7 @@ Route::delete('product/{id}', [ProductController::class, 'destroy']);
 
 Route::get('client', [ClientController::class, 'index']);
 Route::post('client', [ClientController::class, 'store']);
+Route::post('ci', [ClientController::class, 'consultarCi']);
 Route::get('client/{id}', [ClientController::class, 'show']);
 Route::put('client/{id}', [ClientController::class, 'update']);
 
@@ -47,3 +48,5 @@ Route::post('sales', [SalesController::class, 'store']);
 
 
 Route::get('report', [SalesController::class, 'report']);
+
+

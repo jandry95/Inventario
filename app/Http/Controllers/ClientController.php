@@ -52,20 +52,38 @@ class ClientController extends Controller
             'phone' => ['required', 'string'],
         ]);
 
-        $clients = new Client();
+        $consultar = $request->input("ci");
 
-        $clients->name = $request->input("name");
-        $clients->lastName = $request->input("lastName");
-        $clients->ci = $request->input("ci");
-        $clients->address = $request->input("address");
-        $clients->phone = $request->input("phone");
+        $respuesta = DB::table('clients')
+                     ->where('ci', '=', $consultar)
+                      ->first();
 
-        $clients->save();
+        if(!$respuesta)
+        {
+            $clients = new Client();
 
+            $clients->name = $request->input("name");
+            $clients->lastName = $request->input("lastName");
+            $clients->ci = $consultar;
+            $clients->address = $request->input("address");
+            $clients->phone = $request->input("phone");
+
+            $clients->save();
+
+            return response()->json([
+                'data' => $clients,
+                'msg' => "Cliente creado con exito"
+            ]);
+        }
+
+       if($respuesta)
+       {
+        $error = "Esta cedula ya existe";
         return response()->json([
-            'data' => $clients,
-            'msg' => "Cliente creado con exito"
-        ]);
+                'data' => $respuesta,
+                'msg' => $error
+            ],200);
+       }
 
     }
 
@@ -81,6 +99,19 @@ class ClientController extends Controller
         return response()->json([
             'data' => $clients,
             'msg' => "Cliente creado con exito"
+        ]);
+    }
+
+    public function consultarCi(Request $request)
+    {
+        $consultar = $request->input("ci");
+
+        $respuesta = DB::table('clients')
+                     ->where('ci', '=', $consultar)
+                      ->first();
+        return response()->json([
+            'data' => $respuesta,
+            'msg' => "Esta cedula ya existe"
         ]);
     }
 
