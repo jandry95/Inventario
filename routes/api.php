@@ -45,6 +45,9 @@ Route::put('client/{id}', [ClientController::class, 'update']);
 
 Route::get('sales', [SalesController::class, 'index']);
 Route::post('sales', [SalesController::class, 'store']);
+Route::get('sales/{id}', [SalesController::class, 'show']);
+Route::put('sales/{id}', [SalesController::class, 'update']);
+Route::delete('sales/{id}', [SalesController::class, 'destroy']);
 
 
 Route::get('report', [SalesController::class, 'report']);

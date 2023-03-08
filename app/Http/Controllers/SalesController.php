@@ -127,7 +127,12 @@ class SalesController extends Controller
      */
     public function show($id)
     {
-        //
+        $sales = Sales::find($id);
+        return response()->json([
+            'data' => $sales,
+            'msg' => "Exito"
+        ]);
+
     }
 
     /**
@@ -150,7 +155,90 @@ class SalesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $sales = Sales::find($id);
+
+        $product = $request->input('sales_products');
+
+        $productId = $request->input('product_id');
+
+        $consultar = Product::find($productId);
+
+        if($product == $sales->sales_products)
+        {
+            $sales->sales_products = $product;
+            $sales->product_id = $productId;
+            $sales->client_id =  $request->input('client_id');
+            $sales->save();
+
+            return response()->json([
+                'data' => $consultar->productsStock,
+                'producto' => $product,
+
+                'msg' => 'Actualizacion realizada con exito'
+            ], 200);
+        }
+
+
+        if($product > $sales->sales_products)
+        {
+
+            if($product > $consultar->productsStock)
+            {
+                return response()->json([
+                    'data' => $consultar->productsStock,
+                    'producto' => $product,
+
+                    'msg' => 'No hay muchos en stock'
+                ], 200);
+            }
+
+            if($product < $consultar->productsStock)
+            {
+                $resta = $product - $sales->sales_products;
+
+                $sales->sales_products = $product;
+                $sales->product_id = $productId;
+                $sales->client_id =  $request->input('client_id');
+                $sales->save();
+
+                $product_sold = DB::select("UPDATE products INNER JOIN sales
+                ON products.id = sales.product_id
+                SET products.productsStock = products.productsStock - $resta
+                WHERE products.id = $productId");
+
+                return response()->json([
+                    'data' => $sales->sales_products,
+                    'producto' => $product,
+                    'suma' => $resta,
+                    'msg' => 'Es mayor',
+                    'msg2' => 'Si hay en Stock'
+                ], 200);
+
+            }
+
+
+        }
+        if($product < $sales->sales_products)
+        {
+            $resta = $sales->sales_products - $product ;
+
+            $sales->sales_products = $product;
+            $sales->product_id = $productId;
+            $sales->client_id =  $request->input('client_id');
+            $sales->save();
+
+            $product_sold = DB::select("UPDATE products INNER JOIN sales
+            ON products.id = sales.product_id
+            SET products.productsStock = products.productsStock + $resta
+            WHERE products.id = $productId");
+
+            return response()->json([
+                'data' => $sales->sales_products,
+                'producto' => $product,
+                'suma' => $resta,
+                'msg' => 'Es menor'
+            ], 200);
+        }
     }
 
     /**
@@ -159,8 +247,26 @@ class SalesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        $sales = Sales::find($id);
+
+        $product = $sales->sales_products;
+
+        $productId = $sales->product_id;
+
+        $consultar = Product::find($productId);
+
+        $product_sold = DB::select("UPDATE products INNER JOIN sales
+            ON products.id = sales.product_id
+            SET products.productsStock = products.productsStock + $product
+            WHERE products.id = $productId");
+
+        $sales->delete();
+
+        return response()->json([
+            'data' => $sales,
+            'msg' => 'Venta cancelada'
+        ], 200);
     }
 }
